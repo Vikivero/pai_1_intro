@@ -10,7 +10,7 @@ import static java.net.http.HttpResponse.BodyHandlers.ofString;
 
 public class Main {
 
-    private static final int MAX_RETRIES = 5;
+    private static final int N = 5;
     private static final int INITIAL_DELAY_MS = 1000;
     private static final double BACKOFF_FACTOR = 2.0;
 
@@ -37,7 +37,7 @@ public class Main {
 
         HttpClient client = HttpClient.newHttpClient();
 
-        while (retries < MAX_RETRIES) {
+        while (retries < N) {
             try {
                 HttpRequest request = HttpRequest.newBuilder()
                         .timeout(Duration.ofSeconds(delay))
