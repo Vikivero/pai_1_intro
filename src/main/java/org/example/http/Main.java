@@ -3,20 +3,26 @@ package org.example.http;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
+import java.net.http.*;
+import java.time.Duration;
 
 import static java.net.http.HttpResponse.BodyHandlers.ofString;
 
 public class Main {
+
+    private static final int MAX_RETRIES = 5;
+    private static final int INITIAL_DELAY_MS = 1000;
+    private static final double BACKOFF_FACTOR = 2.0;
+
+
     public static void main(String[] args) {
 
-        String url = "https://httpbin.org/post";
+        String url = "https://httpbin.org/delay/2";
 
         // wyslanie reqesta
         String dane = null;
         try {
-            dane = wyslijRequst(url);
+            dane = wyslijRequestZBackoff(url);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -25,21 +31,37 @@ public class Main {
         obrobDane(dane);
     }
 
-    private static String wyslijRequst(String url) throws URISyntaxException, IOException, InterruptedException {
+    public static String wyslijRequestZBackoff(String url) throws InterruptedException, IOException {
+        int retries = 0;
+        long delay = INITIAL_DELAY_MS;
 
         HttpClient client = HttpClient.newHttpClient();
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI(url))
-                .POST(HttpRequest.BodyPublishers.ofString("{\"name\": \"natalia\"}"))
-                .header("Content-Type","application/json")
-                .build();
+        while (retries < MAX_RETRIES) {
+            try {
+                HttpRequest request = HttpRequest.newBuilder()
+                        .timeout(Duration.ofSeconds(delay))
+                        .uri(new URI(url))
+                        .POST(HttpRequest.BodyPublishers.ofString("{\"name\": \"natalia\"}"))
+                        .header("Content-Type", "application/json")
+                        .build();
 
-        var odpowiedz = client.send(request, ofString());
-        if (odpowiedz.statusCode() != 200) {
-            System.exit(1);
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+                if (response.statusCode() == 200) {
+                    return response.body();
+                }
+            } catch (HttpTimeoutException ignored) {} catch (URISyntaxException | IOException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            // Exponential backoff
+            Thread.sleep(delay);
+            delay *= BACKOFF_FACTOR;
+            retries++;
         }
-        return odpowiedz.body();
+
+        throw new IOException("Failed to send request after maximum retries.");
     }
 
     private static void obrobDane(String dane) {
