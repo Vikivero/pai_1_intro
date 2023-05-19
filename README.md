@@ -8,7 +8,7 @@
  Dla programistów w Amazonie i innych firmach budujących serwisy internetowe, graceful degradation jest ważnym elementem, który pozwala na utrzymanie dostępności usług, zapewnienie pozytywnego doświadczenia użytkownika, ograniczenie wpływu błędów, skalowalność systemu oraz ułatwienie debugowania.
  
 ## Krok 1: Instalacja 'curl' i 'jq'
-Upewnij się, że masz zainstalowane narzędzia 'curl' i 'jq' na swoim systemie operacyjnym.Dla instalacij 'jq' uzyj polecenie w bash: sudo apt install ig.Dla instalacij 'curl'uzyj polecenie w bash: sudo apt install curl.Albo inne polecenia ktore znasz.
+Upewnij się, że masz zainstalowane narzędzia 'curl' i 'jq' na swoim systemie operacyjnym. Dla instalacij 'jq' uzyj polecenie w bash: sudo apt install iq. Dla instalacij 'curl' uzyj polecenie w bash: sudo apt install curl. Albo inne polecenia ktore znasz. 
 
 ## wyswietlanie imia super bohaterow
 Urzyj ponizej podany pryklad aby wypisać imiona super bohaterów z https://mdn.github.io/learning-area/javascript/oojs/json/superheroes.json.:
